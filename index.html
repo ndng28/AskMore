@@ -330,6 +330,7 @@ const state = {
   screen: 'name',
   name: 'Player',
   level: 1,
+  roundLevel: 1,
   streak: 0,
   correctCount: 0,
   round: [],
@@ -461,6 +462,7 @@ function showLevelUp(level) {
 
 /* ---- game actions ---- */
 function startRound() {
+  state.roundLevel = state.level;
   state.round = generateRound(ROUND_SIZE, state.level);
   state.currentProblem = 0;
   state.correctCount = 0;
@@ -522,22 +524,50 @@ function nextProblem() {
   state.gotWrong = false;
 
   if (state.currentProblem >= ROUND_SIZE) {
-    renderSummaryScreen();
+    saveRound();
     return;
   }
 
   renderGameScreen();
 }
 
+async function saveRound() {
+  const summary = scoreRound(state.results.map(r => ({ isCorrect: r.isCorrect })));
+  try {
+    await fetch('/api/rounds', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        userName: state.name,
+        level: state.roundLevel,
+        correct: summary.correct,
+        total: summary.total,
+        pct: summary.pct,
+        currentLevel: state.level,
+        streak: state.streak,
+      }),
+    });
+  } catch { /* offline — no persistence */ }
+  renderSummaryScreen();
+}
+
 function handlePlayAgain() {
   startRound();
 }
 
-function handleStart() {
-  const name = nameInput.value.trim();
-  state.name = name || 'Player';
+async function handleStart() {
+  const name = nameInput.value.trim() || 'Player';
+  state.name = name;
   state.level = 1;
   state.streak = 0;
+  try {
+    const res = await fetch(`/api/users/${encodeURIComponent(name)}`);
+    if (res.ok) {
+      const user = await res.json();
+      state.level = user.currentLevel;
+      state.streak = user.streak;
+    }
+  } catch { /* offline — start fresh */ }
   startRound();
 }
 
