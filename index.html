@@ -241,6 +241,16 @@
   @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
   @keyframes popIn { from { transform: scale(0.5); opacity: 0; } to { transform: scale(1); opacity: 1; } }
 
+  .user-list { display: flex; flex-direction: column; gap: 0.75rem; margin-bottom: 1.5rem; }
+  .user-btn { font-size: 1.3rem; padding: 0.75rem 1.5rem; background: rgba(255,255,255,0.7); color: var(--text); border: 3px solid var(--lavender); border-radius: 14px; cursor: pointer; font-weight: 700; transition: transform 0.15s, border-color 0.15s; }
+  .user-btn:hover { transform: scale(1.03); border-color: var(--text-light); }
+  .user-btn:active { transform: scale(0.97); }
+  .new-player-wrap { text-align: center; }
+  .new-player-btn { background: none; color: var(--text-light); border: 2px dashed var(--lavender); font-size: 1rem; }
+  .new-player-btn:hover { border-color: var(--text-light); }
+  .new-player-actions { display: flex; gap: 0.5rem; justify-content: center; margin-top: 0.5rem; }
+  .cancel-btn { background: rgba(255,255,255,0.5); color: var(--text); font-size: 1rem; padding: 0.5rem 1.25rem; }
+
   .progress { display: flex; justify-content: center; gap: 0.4rem; margin-bottom: 1rem; }
   .progress-dot { width: 16px; height: 16px; border-radius: 50%; background: var(--lavender); transition: background 0.3s, transform 0.3s; }
   .progress-dot.done { background: var(--text-light); }
@@ -273,9 +283,16 @@
   <!-- Name Screen -->
   <section id="screen-name">
     <h1 id="name-title"></h1>
-    <div class="name-input-wrap">
-      <input type="text" id="name-input" maxlength="20" autocomplete="off">
-      <button id="start-btn"></button>
+    <div id="user-list" class="user-list"></div>
+    <div id="new-player-wrap" class="new-player-wrap">
+      <button id="new-player-btn" class="new-player-btn"></button>
+      <div id="new-player-form" class="hidden">
+        <input type="text" id="name-input" maxlength="20" autocomplete="off">
+        <div class="new-player-actions">
+          <button id="cancel-btn" class="cancel-btn">← Back</button>
+          <button id="start-btn"></button>
+        </div>
+      </div>
     </div>
   </section>
 
@@ -412,14 +429,62 @@ function formatTemplate(tpl, data) {
 }
 
 /* ---- rendering ---- */
-function renderNameScreen() {
+async function renderNameScreen() {
   fill($('name-title'), strings.nameTitle);
+  fill($('new-player-btn'), strings.newPlayer);
   nameInput.placeholder = strings.namePlaceholder;
-  nameInput.value = state.name;
   fill(startBtn, strings.startButton);
+
+  const userList = $('user-list');
+  userList.innerHTML = '';
+  const newPlayerForm = $('new-player-form');
+  newPlayerForm.classList.add('hidden');
+
+  try {
+    const res = await fetch('/api/users');
+    if (res.ok) {
+      const names = await res.json();
+      names.sort();
+      for (const name of names) {
+        const btn = document.createElement('button');
+        btn.className = 'user-btn';
+        btn.textContent = name;
+        btn.addEventListener('click', () => selectUser(name));
+        userList.appendChild(btn);
+      }
+    }
+  } catch { /* offline — no saved users shown */ }
+
   showScreen('name');
-  nameInput.focus();
 }
+
+function selectUser(name) {
+  state.name = name;
+  loadUserAndStart();
+}
+
+async function loadUserAndStart() {
+  try {
+    const res = await fetch(`/api/users/${encodeURIComponent(state.name)}`);
+    if (res.ok) {
+      const user = await res.json();
+      state.level = user.currentLevel;
+      state.streak = user.streak;
+    }
+  } catch { /* offline — start fresh */ }
+  startRound();
+}
+
+$('new-player-btn').addEventListener('click', () => {
+  $('new-player-form').classList.remove('hidden');
+  $('new-player-btn').classList.add('hidden');
+  nameInput.focus();
+});
+
+$('cancel-btn').addEventListener('click', () => {
+  $('new-player-form').classList.add('hidden');
+  $('new-player-btn').classList.remove('hidden');
+});
 
 function renderProgress() {
   const container = $('progress');
@@ -667,20 +732,12 @@ function handlePlayAgain() {
   startRound();
 }
 
-async function handleStart() {
+function handleStart() {
   const name = nameInput.value.trim() || 'Player';
   state.name = name;
   state.level = 1;
   state.streak = 0;
-  try {
-    const res = await fetch(`/api/users/${encodeURIComponent(name)}`);
-    if (res.ok) {
-      const user = await res.json();
-      state.level = user.currentLevel;
-      state.streak = user.streak;
-    }
-  } catch { /* offline — start fresh */ }
-  startRound();
+  loadUserAndStart();
 }
 
 /* ---- numpad ---- */

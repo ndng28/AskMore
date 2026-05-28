@@ -38,7 +38,14 @@ const app = express();
 app.use(express.json());
 app.use(express.static(path.join(__dirname)));
 
+app.get('/api/users', (req, res) => {
+  const stmt = db.prepare('SELECT name FROM users ORDER BY name');
+  const users = stmt.all();
+  res.json(users.map(u => u.name));
+});
+
 app.get('/api/users/:name', (req, res) => {
+  if (req.params.name === 'favicon.ico') return res.status(404).end();
   const stmt = db.prepare('SELECT * FROM users WHERE name = ?');
   const user = stmt.get(req.params.name);
   if (!user) return res.status(404).json({ error: 'User not found' });

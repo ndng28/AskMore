@@ -1,7 +1,8 @@
 const strings = {
-  nameTitle: "What's your name, magical one? 🦄",
-  namePlaceholder: 'Your name',
+  nameTitle: "Who's playing? 🦄",
+  namePlaceholder: 'New player name',
   startButton: "✨ Start the Quest! ✨",
+  newPlayer: "+ New Player",
   gameTitle: `{name}'s Ask More 🦄`,
   levelName: 'Rank: {rank} 🦄',
   levelNames: ['Foal', 'Pony', 'Unicorn', 'Pegasus', 'Alicorn'],
