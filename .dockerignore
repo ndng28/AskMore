@@ -1,0 +1,8 @@
+node_modules/
+.git/
+.gitignore
+*.md
+babel.config.js
+game.test.js
+package.json
+package-lock.json
