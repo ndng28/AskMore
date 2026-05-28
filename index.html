@@ -241,6 +241,16 @@
   @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
   @keyframes popIn { from { transform: scale(0.5); opacity: 0; } to { transform: scale(1); opacity: 1; } }
 
+  .progress { display: flex; justify-content: center; gap: 0.4rem; margin-bottom: 1rem; }
+  .progress-dot { width: 16px; height: 16px; border-radius: 50%; background: var(--lavender); transition: background 0.3s, transform 0.3s; }
+  .progress-dot.done { background: var(--text-light); }
+  .progress-dot.current { background: var(--gold); transform: scale(1.3); box-shadow: 0 0 6px rgba(251,191,36,0.6); }
+
+  .numpad { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.5rem; max-width: 240px; margin: 0 auto 1rem; }
+  .numpad button { font-size: 1.5rem; padding: 0; aspect-ratio: 1; }
+
+  .summary-stars { font-size: 2.5rem; margin-bottom: 1rem; }
+
   @media (prefers-reduced-motion: reduce) {
     *, *::before, *::after {
       animation-duration: 0.01ms !important;
@@ -277,6 +287,8 @@
       <div class="score-display" id="score-display"></div>
     </div>
 
+    <div class="progress" id="progress" aria-label="Round progress"></div>
+
     <div class="problem" aria-live="assertive">
       <span class="num" id="num-a">0</span>
       <span class="op" id="op">+</span>
@@ -294,11 +306,27 @@
     </form>
 
     <div id="feedback" role="alert"></div>
+
+    <div class="numpad" id="numpad">
+      <button data-num="1">1</button>
+      <button data-num="2">2</button>
+      <button data-num="3">3</button>
+      <button data-num="4">4</button>
+      <button data-num="5">5</button>
+      <button data-num="6">6</button>
+      <button data-num="7">7</button>
+      <button data-num="8">8</button>
+      <button data-num="9">9</button>
+      <button data-action="clear">C</button>
+      <button data-num="0">0</button>
+      <button data-action="backspace">⌫</button>
+    </div>
   </section>
 
   <!-- Summary Screen -->
   <section id="screen-summary" class="hidden">
     <h1 id="summary-title"></h1>
+    <div id="summary-stars" class="summary-stars"></div>
     <div class="summary-stats">
       <p id="summary-score"></p>
       <p id="summary-pct"></p>
@@ -393,11 +421,25 @@ function renderNameScreen() {
   nameInput.focus();
 }
 
+function renderProgress() {
+  const container = $('progress');
+  container.innerHTML = '';
+  for (let i = 0; i < ROUND_SIZE; i++) {
+    const dot = document.createElement('div');
+    dot.className = 'progress-dot';
+    if (i < state.currentProblem) dot.classList.add('done');
+    else if (i === state.currentProblem) dot.classList.add('current');
+    container.appendChild(dot);
+  }
+}
+
 function renderGameScreen() {
   const levelName = getLevelName(state.level);
   fill(levelDisplay, formatTemplate(strings.levelName, { rank: levelName }));
   fill(streakDisplay, formatTemplate(strings.streak, { n: state.streak }));
   fill(scoreDisplay, formatTemplate(strings.score, { correct: state.correctCount, total: ROUND_SIZE }));
+
+  renderProgress();
 
   const problem = state.round[state.currentProblem];
   fill(numA, problem.a);
@@ -414,6 +456,17 @@ function renderGameScreen() {
   showScreen('game');
 }
 
+function renderStars(pct) {
+  const numStars = pct === 100 ? 5 : pct >= 80 ? 4 : pct >= 60 ? 3 : pct >= 40 ? 2 : 1;
+  const container = $('summary-stars');
+  container.textContent = '';
+  for (let i = 0; i < 5; i++) {
+    const star = document.createElement('span');
+    star.textContent = i < numStars ? '⭐' : '☆';
+    container.appendChild(star);
+  }
+}
+
 function renderSummaryScreen() {
   const results = state.results;
   const summary = scoreRound(results.map((r) => ({ isCorrect: r.isCorrect })));
@@ -424,6 +477,15 @@ function renderSummaryScreen() {
   fill(summaryPct, formatTemplate(strings.summaryPct, { pct: summary.pct }));
   fill(summaryLevel, formatTemplate(strings.summaryLevel, { rank: levelName }));
   fill(playAgainBtn, strings.playAgain);
+
+  renderStars(summary.pct);
+
+  if (summary.pct === 100) {
+    setTimeout(spawnConfetti, 300);
+    setTimeout(spawnConfetti, 800);
+    setTimeout(spawnConfetti, 1300);
+    fill(summaryTitle, strings.perfectRound);
+  }
 
   showScreen('summary');
 }
@@ -447,6 +509,48 @@ function spawnConfetti() {
   }
   document.body.appendChild(container);
   setTimeout(() => container.remove(), 4000);
+}
+
+/* ---- sound effects ---- */
+let audioCtx;
+function getAudioCtx() {
+  if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  return audioCtx;
+}
+
+function playNote(freq, start, duration, type, volume) {
+  const ctx = getAudioCtx();
+  const osc = ctx.createOscillator();
+  const gain = ctx.createGain();
+  osc.connect(gain);
+  gain.connect(ctx.destination);
+  osc.type = type || 'sine';
+  osc.frequency.setValueAtTime(freq, start);
+  gain.gain.setValueAtTime(volume || 0.25, start);
+  gain.gain.exponentialRampToValueAtTime(0.01, start + duration);
+  osc.start(start);
+  osc.stop(start + duration);
+}
+
+function playCorrectSound() {
+  const t = getAudioCtx().currentTime;
+  playNote(523, t, 0.15, 'sine', 0.25);
+  playNote(659, t + 0.1, 0.15, 'sine', 0.25);
+  playNote(784, t + 0.2, 0.2, 'sine', 0.25);
+}
+
+function playWrongSound() {
+  const t = getAudioCtx().currentTime;
+  playNote(200, t, 0.2, 'square', 0.15);
+  playNote(150, t + 0.15, 0.2, 'square', 0.15);
+}
+
+function playLevelUpSound() {
+  const t = getAudioCtx().currentTime;
+  playNote(523, t, 0.2, 'sine', 0.2);
+  playNote(659, t + 0.12, 0.2, 'sine', 0.2);
+  playNote(784, t + 0.24, 0.2, 'sine', 0.2);
+  playNote(1047, t + 0.36, 0.3, 'sine', 0.2);
 }
 
 /* ---- level-up banner ---- */
@@ -489,6 +593,7 @@ function handleAnswer(e) {
     state.correctCount++;
     state.results.push({ userAnswer, isCorrect: true });
 
+    playCorrectSound();
     fill(feedback, strings.correct);
     feedback.className = 'correct';
     spawnConfetti();
@@ -502,13 +607,20 @@ function handleAnswer(e) {
 
     setTimeout(() => {
       if (leveledUp) {
+        playLevelUpSound();
         showLevelUp(state.level);
       }
       nextProblem();
     }, leveledUp ? 2200 : 800);
   } else {
+    playWrongSound();
     feedback.className = 'wrong';
-    fill(feedback, strings.wrong);
+    fill(feedback, formatTemplate(strings.wrong, {
+      a: problem.a,
+      op: problem.operator === '+' ? '+' : '−',
+      b: problem.b,
+      answer: raw,
+    }));
     const card = document.querySelector('.card');
     card.classList.remove('shake');
     void card.offsetWidth;
@@ -570,6 +682,24 @@ async function handleStart() {
   } catch { /* offline — start fresh */ }
   startRound();
 }
+
+/* ---- numpad ---- */
+$('numpad').addEventListener('click', (e) => {
+  const btn = e.target.closest('button');
+  if (!btn) return;
+  if (btn.dataset.num !== undefined) {
+    answerInput.value += btn.dataset.num;
+    answerInput.focus();
+  }
+  if (btn.dataset.action === 'backspace') {
+    answerInput.value = answerInput.value.slice(0, -1);
+    answerInput.focus();
+  }
+  if (btn.dataset.action === 'clear') {
+    answerInput.value = '';
+    answerInput.focus();
+  }
+});
 
 /* ---- event binding ---- */
 answerForm.addEventListener('submit', handleAnswer);
