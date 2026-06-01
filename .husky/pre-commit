@@ -1,0 +1,6 @@
+npx lint-staged
+
+# Secrets scanning
+.husky/gitleaks.sh || exit 1
+
+npm test

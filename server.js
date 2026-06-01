@@ -6,7 +6,9 @@ const DATA_DIR = process.env.DATA_DIR || path.join(__dirname, 'data');
 const DB_PATH = path.join(DATA_DIR, 'database.sqlite');
 const PORT = process.env.PORT || 3000;
 
-if (!fs.existsSync(DATA_DIR)) fs.mkdirSync(DATA_DIR, { recursive: true });
+if (!fs.existsSync(DATA_DIR)) {
+  fs.mkdirSync(DATA_DIR, { recursive: true });
+}
 
 const { DatabaseSync } = require('node:sqlite');
 const db = new DatabaseSync(DB_PATH);
@@ -41,28 +43,34 @@ app.use(express.static(path.join(__dirname)));
 app.get('/api/users', (req, res) => {
   const stmt = db.prepare('SELECT name FROM users ORDER BY name');
   const users = stmt.all();
-  res.json(users.map(u => u.name));
+  res.json(users.map((u) => u.name));
 });
 
 app.get('/api/users/:name', (req, res) => {
-  if (req.params.name === 'favicon.ico') return res.status(404).end();
+  if (req.params.name === 'favicon.ico') {
+    return res.status(404).end();
+  }
   const stmt = db.prepare('SELECT * FROM users WHERE name = ?');
   const user = stmt.get(req.params.name);
-  if (!user) return res.status(404).json({ error: 'User not found' });
+  if (!user) {
+    return res.status(404).json({ error: 'User not found' });
+  }
   res.json({ name: user.name, currentLevel: user.current_level, streak: user.streak });
 });
 
 app.get('/api/users/:name/rounds', (req, res) => {
   const stmt = db.prepare('SELECT * FROM rounds WHERE user_name = ? ORDER BY played_at DESC');
   const rounds = stmt.all(req.params.name);
-  res.json(rounds.map(r => ({
-    id: r.id,
-    level: r.level,
-    correct: r.correct,
-    total: r.total,
-    pct: r.pct,
-    playedAt: r.played_at,
-  })));
+  res.json(
+    rounds.map((r) => ({
+      id: r.id,
+      level: r.level,
+      correct: r.correct,
+      total: r.total,
+      pct: r.pct,
+      playedAt: r.played_at,
+    })),
+  );
 });
 
 app.post('/api/rounds', (req, res) => {
@@ -81,7 +89,7 @@ app.post('/api/rounds', (req, res) => {
   `);
 
   const insertRound = db.prepare(
-    'INSERT INTO rounds (user_name, level, correct, total, pct) VALUES (?, ?, ?, ?, ?)'
+    'INSERT INTO rounds (user_name, level, correct, total, pct) VALUES (?, ?, ?, ?, ?)',
   );
 
   db.exec('BEGIN');

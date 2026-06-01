@@ -9,7 +9,9 @@ const CONFIGS = [
 const MAX_LEVEL = CONFIGS.length;
 
 function clampLevel(level) {
-  if (level < 1 || level > MAX_LEVEL) return 1;
+  if (level < 1 || level > MAX_LEVEL) {
+    return 1;
+  }
   return level;
 }
 
