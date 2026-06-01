@@ -154,29 +154,18 @@ describe('generateRound', () => {
 
 describe('scoreRound', () => {
   test('returns correct, total, pct', () => {
-    const results = [
-      { isCorrect: true },
-      { isCorrect: false },
-      { isCorrect: true },
-    ];
+    const results = [{ isCorrect: true }, { isCorrect: false }, { isCorrect: true }];
     const summary = scoreRound(results);
     expect(summary).toEqual({ correct: 2, total: 3, pct: 67 });
   });
 
   test('all correct returns 100%', () => {
-    const results = [
-      { isCorrect: true },
-      { isCorrect: true },
-    ];
+    const results = [{ isCorrect: true }, { isCorrect: true }];
     expect(scoreRound(results).pct).toBe(100);
   });
 
   test('none correct returns 0%', () => {
-    const results = [
-      { isCorrect: false },
-      { isCorrect: false },
-      { isCorrect: false },
-    ];
+    const results = [{ isCorrect: false }, { isCorrect: false }, { isCorrect: false }];
     expect(scoreRound(results).pct).toBe(0);
   });
 
