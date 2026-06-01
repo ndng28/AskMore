@@ -96,6 +96,24 @@ Keep the subject line under 72 characters and in the imperative mood
 
 ## Running the pipeline locally
 
+### One-time setup
+
+The pre-commit pipeline runs `gitleaks` to scan staged changes for
+secrets. Install it before your first commit:
+
+```bash
+brew install gitleaks          # macOS (Homebrew)
+scoop install gitleaks        # Windows
+# Linux: see https://github.com/gitleaks/gitleaks/releases
+```
+
+If `gitleaks` is not on your `PATH`, the pre-commit hook will fail
+with an explicit "gitleaks is not installed" message rather than
+silently bypassing the secrets gate. This is intentional — the policy
+in `AGENTS.md` forbids bypassing gates.
+
+### Per-commit
+
 ```bash
 npm start            # Start the server on :3000
 npm test             # Run the full Jest suite
@@ -104,7 +122,8 @@ npx prettier --check .  # Verify formatting
 ```
 
 Before opening a PR, run all of the above. If `npm test` passes locally,
-CI will pass on the PR.
+CI will pass on the PR. The pre-commit hook runs `lint-staged`,
+`gitleaks`, and `jest` automatically on every `git commit`.
 
 ## Questions?
 
