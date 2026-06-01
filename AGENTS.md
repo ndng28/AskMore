@@ -1,9 +1,11 @@
 # Ask More 🦄 — Magical Math Game for Kids
 
 ## Overview
+
 A unicorn-themed progressive math game. Players solve arithmetic problems across 5 ranks, leveling up after 5 consecutive correct answers. Built as a single-page web app with an Express + SQLite backend.
 
 ## Quick Start
+
 ```bash
 npm start           # Start server on port 3000
 npm test            # Run Jest tests
@@ -11,44 +13,53 @@ docker-compose up   # Run via Docker on port 8080
 ```
 
 ## Project Structure
-| File | Purpose |
-|------|---------|
-| `index.html` | Frontend SPA (vanilla JS modules, CSS animations, Web Audio, confetti) |
-| `server.js` | Express server + `node:sqlite` database (users, rounds) |
-| `game.js` | ES module: problem generation, scoring, level progression |
-| `game.test.js` | Jest tests covering all game logic |
-| `en.js` | English localization strings (unicorn/magic themed) |
-| `Dockerfile` | Node 22 Alpine, WAL-mode SQLite in `/app/data` |
-| `docker-compose.yml` | Port 127.0.0.1:8080 → 3000, memory limit 128M, healthcheck |
+
+| File                 | Purpose                                                                |
+| -------------------- | ---------------------------------------------------------------------- |
+| `index.html`         | Frontend SPA (vanilla JS modules, CSS animations, Web Audio, confetti) |
+| `server.js`          | Express server + `node:sqlite` database (users, rounds)                |
+| `game.js`            | ES module: problem generation, scoring, level progression              |
+| `game.test.js`       | Jest tests covering all game logic                                     |
+| `en.js`              | English localization strings (unicorn/magic themed)                    |
+| `eslint.config.mjs`  | ESLint flat config — AI slop rules, complexity gates, security checks  |
+| `.prettierrc`        | Prettier formatting config                                             |
+| `.husky/pre-commit`  | Pre-commit hook: lint-staged → gitleaks → jest                         |
+| `Dockerfile`         | Node 22 Alpine, WAL-mode SQLite in `/app/data`                         |
+| `docker-compose.yml` | Port 127.0.0.1:8080 → 3000, memory limit 128M, healthcheck             |
+| `AGENTS.md`          | Project context for AI coding agents                                   |
 
 ## Game Ranks (5 Levels)
+
 | Level | Max Number | Operations | Rank Name |
-|-------|-----------|------------|-----------|
-| 1 | 4 | + | Foal |
-| 2 | 6 | + | Pony |
-| 3 | 9 | + | Unicorn |
-| 4 | 6 | +, - | Pegasus |
-| 5 | 9 | +, - | Alicorn |
+| ----- | ---------- | ---------- | --------- |
+| 1     | 4          | +          | Foal      |
+| 2     | 6          | +          | Pony      |
+| 3     | 9          | +          | Unicorn   |
+| 4     | 6          | +, -       | Pegasus   |
+| 5     | 9          | +, -       | Alicorn   |
 
 - **Level-up condition:** 5 consecutive correct answers (`updateLevel` in `game.js`)
 - **Round size:** 10 problems per round
 - **Subtraction:** `a` is always >= `b` (no negative results)
 
 ## API Endpoints
-| Method | Path | Description |
-|--------|------|-------------|
-| GET | `/api/users` | List all user names |
-| GET | `/api/users/:name` | Get user (currentLevel, streak) |
-| GET | `/api/users/:name/rounds` | Round history (desc) |
-| POST | `/api/rounds` | Save round + upsert user (transactional) |
+
+| Method | Path                      | Description                              |
+| ------ | ------------------------- | ---------------------------------------- |
+| GET    | `/api/users`              | List all user names                      |
+| GET    | `/api/users/:name`        | Get user (currentLevel, streak)          |
+| GET    | `/api/users/:name/rounds` | Round history (desc)                     |
+| POST   | `/api/rounds`             | Save round + upsert user (transactional) |
 
 ## Database
+
 - **Engine:** `node:sqlite` (built-in, no npm dependency)
 - **Location:** `./data/database.sqlite`
 - **Pragma:** WAL mode
 - **Tables:** `users` (name PK, current_level, streak, timestamps), `rounds` (auto-increment, user FK)
 
 ## Game Flow
+
 1. **Name Screen** — Pick existing user from SQLite or enter new name
 2. **Game Screen** — 10 problems, answer via numpad (click/touch) or keyboard
 3. **Feedback** — Correct: confetti + chime, Wrong: shake + buzz + show correct answer
@@ -56,21 +67,69 @@ docker-compose up   # Run via Docker on port 8080
 5. **Summary Screen** — Stars (1-5), percentage, rank, "Play Again" button
 
 ## Key Game Logic (`game.js`)
+
 - `generateProblem(level)` — returns `{ a, b, operator, answer }`
 - `checkAnswer(problem, answer)` — accepts number or numeric string
 - `updateLevel(consecutiveCorrect, currentLevel)` — returns new level (clamped 1-5)
 - `generateRound(count, level)` — array of `count` problems
 - `scoreRound(results)` — returns `{ correct, total, pct }`
 
+## Pre-Commit Pipeline
+
+Every commit runs three automated checks via **husky** + **lint-staged**:
+
+| Stage            | Tool              | What It Catches                               |
+| ---------------- | ----------------- | --------------------------------------------- |
+| 1. Lint & Format | ESLint + Prettier | AI slop, unused code, style issues            |
+| 2. Secrets       | gitleaks          | API keys, tokens, passwords in staged changes |
+| 3. Tests         | Jest              | Regression failures                           |
+
+### What ESLint Enforces
+
+| Rule                     | Severity      | What It Catches                              |
+| ------------------------ | ------------- | -------------------------------------------- |
+| `no-console`             | warn          | `console.log` debugging artifacts            |
+| `no-alert`               | warn          | `alert()` / `confirm()` debugging artifacts  |
+| `no-empty`               | error         | Empty catch blocks (AI skips error handling) |
+| `no-unused-vars`         | error         | Dead code, refactoring leftovers             |
+| `no-var`                 | error         | Old-style `var` declarations                 |
+| `prefer-const`           | error         | `let` used where `const` works               |
+| `no-eval`                | error         | `eval()` and `new Function()` calls          |
+| `no-implied-eval`        | error         | `setTimeout`/`setInterval` with strings      |
+| `no-throw-literal`       | error         | `throw` must use `Error` objects             |
+| `complexity`             | warn (max 10) | Overly complex functions                     |
+| `max-depth`              | warn (max 4)  | Deeply nested blocks                         |
+| `max-lines-per-function` | warn (max 50) | "God functions"                              |
+| `max-params`             | warn (max 4)  | Too many function parameters                 |
+| `max-nested-callbacks`   | warn (max 3)  | Callback hell                                |
+| `eqeqeq`                 | error         | `==` instead of `===` (allows `== null`)     |
+| `curly`                  | error         | All control statements need braces           |
+| `no-warning-comments`    | warn          | `TODO:`, `FIXME:`, `HACK:` placeholders      |
+| `no-useless-return`      | error         | Unnecessary return statements                |
+| `no-useless-concat`      | error         | Unnecessary string concatenation             |
+| `no-useless-escape`      | warn          | Unnecessary escape characters                |
+
+### Security Gates
+
+`gitleaks protect --staged` runs on every commit. It blocks any staged change containing:
+
+- API keys and tokens (AWS, GitHub, Stripe, etc.)
+- Private SSH keys and certificates
+- Database connection strings with credentials
+- High-entropy strings that look like secrets
+
 ## Testing
+
 ```bash
 npm test            # Full Jest suite
 npx jest --watch    # Watch mode during development
 npx jest --coverage # Coverage report
 ```
+
 Tests cover: level configs, problem generation (operators, bounds), answer checking (including edge cases), level progression (streaks, clamping), round generation, and scoring.
 
 ## Architecture Notes
+
 - **No build step** — Frontend uses ES modules (`<script type="module">`) directly in the browser
 - **Offline-tolerant** — API failures silently degrade (no saved users list, no persistence)
 - **Sound effects** — Web Audio API transient oscillator tones (no audio files)
