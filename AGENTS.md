@@ -21,7 +21,7 @@ A commit that lands without passing all three gates will be reverted.
 
 ## Overview
 
-A unicorn-themed progressive math game. Players solve arithmetic problems across 5 ranks, leveling up after 5 consecutive correct answers. Built as a single-page web app with an Express + SQLite backend.
+A progressive math game. Players solve arithmetic problems across 5 ranks, leveling up after 5 consecutive correct answers. Built as a single-page web app with an Express + SQLite backend.
 
 ## Quick Start
 
@@ -39,7 +39,7 @@ docker-compose up   # Run via Docker on port 8080
 | `server.js`          | Express server + `node:sqlite` database (users, rounds)                |
 | `game.js`            | ES module: problem generation, scoring, level progression              |
 | `game.test.js`       | Jest tests covering all game logic                                     |
-| `en.js`              | English localization strings (unicorn/magic themed)                    |
+| `en.js`              | English localization strings (rank names, labels, copy)                |
 | `eslint.config.mjs`  | ESLint flat config — AI slop rules, complexity gates, security checks  |
 | `.prettierrc`        | Prettier formatting config                                             |
 | `.husky/pre-commit`  | Pre-commit hook: lint-staged → gitleaks → jest                         |
