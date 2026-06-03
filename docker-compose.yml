@@ -1,13 +1,24 @@
+# Default compose file for local development.
+# For production, see docker-compose.prod.yml.
+#
+#   docker compose up            # dev (bind-mount, dev-friendly)
+#   docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d   # prod
 services:
   avni-math:
-    build: .
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: askmore:dev
+    container_name: askmore-dev
     ports:
       - '127.0.0.1:8080:3000'
     restart: unless-stopped
     volumes:
+      # Bind-mount for easy local inspection of the SQLite file.
+      # Override with a named volume in docker-compose.prod.yml.
       - ./data:/app/data
     healthcheck:
-      test: ['CMD', 'wget', '-q', '-O', '/dev/null', 'http://localhost:3000/']
+      test: ['CMD', 'wget', '-q', '-O-', 'http://localhost:3000/api/users']
       interval: 30s
       timeout: 3s
       retries: 3
