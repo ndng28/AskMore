@@ -1,773 +1,959 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Ask More 🦄</title>
-<style>
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Ask More 🦄</title>
+    <style>
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
 
-  :root {
-    --pink: #fbcfe8;
-    --lavender: #d8b4fe;
-    --mint: #a7f3d0;
-    --gold: #fde68a;
-    --white: #fff;
-    --text: #4a1d6e;
-    --text-light: #7c3aed;
-    --shadow: 0 4px 20px rgba(74, 29, 110, 0.15);
-    --radius: 20px;
-    --font: 'Segoe UI', system-ui, -apple-system, sans-serif;
-  }
+      :root {
+        --pink: #fbcfe8;
+        --lavender: #d8b4fe;
+        --mint: #a7f3d0;
+        --gold: #fde68a;
+        --white: #fff;
+        --text: #4a1d6e;
+        --text-light: #7c3aed;
+        --shadow: 0 4px 20px rgba(74, 29, 110, 0.15);
+        --radius: 20px;
+        --font: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      }
 
-  body {
-    font-family: var(--font);
-    min-height: 100dvh;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: linear-gradient(135deg, var(--lavender), var(--pink), var(--mint), var(--gold));
-    background-size: 400% 400%;
-    animation: gradientShift 12s ease infinite;
-    color: var(--text);
-    padding: 1rem;
-  }
+      body {
+        font-family: var(--font);
+        min-height: 100dvh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: linear-gradient(135deg, var(--lavender), var(--pink), var(--mint), var(--gold));
+        background-size: 400% 400%;
+        animation: gradientShift 12s ease infinite;
+        color: var(--text);
+        padding: 1rem;
+      }
 
-  @keyframes gradientShift {
-    0% { background-position: 0% 50%; }
-    50% { background-position: 100% 50%; }
-    100% { background-position: 0% 50%; }
-  }
+      @keyframes gradientShift {
+        0% {
+          background-position: 0% 50%;
+        }
+        50% {
+          background-position: 100% 50%;
+        }
+        100% {
+          background-position: 0% 50%;
+        }
+      }
 
-  .card {
-    background: rgba(255,255,255,0.85);
-    backdrop-filter: blur(12px);
-    border-radius: var(--radius);
-    padding: 2rem;
-    width: 100%;
-    max-width: 480px;
-    box-shadow: var(--shadow);
-    text-align: center;
-    position: relative;
-    overflow: hidden;
-  }
+      .card {
+        background: rgba(255, 255, 255, 0.85);
+        backdrop-filter: blur(12px);
+        border-radius: var(--radius);
+        padding: 2rem;
+        width: 100%;
+        max-width: 480px;
+        box-shadow: var(--shadow);
+        text-align: center;
+        position: relative;
+        overflow: hidden;
+      }
 
-  h1 {
-    font-size: clamp(1.4rem, 4vw, 2rem);
-    margin-bottom: 1.5rem;
-    line-height: 1.3;
-  }
+      h1 {
+        font-size: clamp(1.4rem, 4vw, 2rem);
+        margin-bottom: 1.5rem;
+        line-height: 1.3;
+      }
 
-  .name-input-wrap {
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
-    align-items: center;
-  }
+      .name-input-wrap {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+        align-items: center;
+      }
 
-  input {
-    font: inherit;
-    font-size: 1.2rem;
-    padding: 0.75rem 1rem;
-    border: 3px solid var(--lavender);
-    border-radius: 12px;
-    outline: none;
-    width: 100%;
-    max-width: 260px;
-    text-align: center;
-    transition: border-color 0.2s;
-  }
+      input {
+        font: inherit;
+        font-size: 1.2rem;
+        padding: 0.75rem 1rem;
+        border: 3px solid var(--lavender);
+        border-radius: 12px;
+        outline: none;
+        width: 100%;
+        max-width: 260px;
+        text-align: center;
+        transition: border-color 0.2s;
+      }
 
-  input:focus {
-    border-color: var(--text-light);
-    box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.2);
-  }
+      input:focus {
+        border-color: var(--text-light);
+        box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.2);
+      }
 
-  input[type="number"] {
-    -moz-appearance: textfield;
-    font-size: 2rem;
-    max-width: 160px;
-    padding: 0.5rem;
-  }
+      input[type='number'] {
+        -moz-appearance: textfield;
+        font-size: 2rem;
+        max-width: 160px;
+        padding: 0.5rem;
+      }
 
-  input[type="number"]::-webkit-inner-spin-button,
-  input[type="number"]::-webkit-outer-spin-button {
-    -webkit-appearance: none;
-  }
+      input[type='number']::-webkit-inner-spin-button,
+      input[type='number']::-webkit-outer-spin-button {
+        -webkit-appearance: none;
+      }
 
-  button {
-    font: inherit;
-    font-size: 1.2rem;
-    font-weight: 700;
-    padding: 0.75rem 2rem;
-    border: none;
-    border-radius: 14px;
-    cursor: pointer;
-    transition: transform 0.15s, box-shadow 0.15s;
-    background: linear-gradient(135deg, var(--text-light), #a855f7);
-    color: var(--white);
-    box-shadow: 0 4px 14px rgba(124, 58, 237, 0.35);
-  }
+      button {
+        font: inherit;
+        font-size: 1.2rem;
+        font-weight: 700;
+        padding: 0.75rem 2rem;
+        border: none;
+        border-radius: 14px;
+        cursor: pointer;
+        transition:
+          transform 0.15s,
+          box-shadow 0.15s;
+        background: linear-gradient(135deg, var(--text-light), #a855f7);
+        color: var(--white);
+        box-shadow: 0 4px 14px rgba(124, 58, 237, 0.35);
+      }
 
-  button:hover { transform: scale(1.05); box-shadow: 0 6px 20px rgba(124, 58, 237, 0.45); }
-  button:active { transform: scale(0.97); }
+      button:hover {
+        transform: scale(1.05);
+        box-shadow: 0 6px 20px rgba(124, 58, 237, 0.45);
+      }
+      button:active {
+        transform: scale(0.97);
+      }
 
-  .game-header {
-    display: flex;
-    justify-content: space-between;
-    gap: 0.5rem;
-    flex-wrap: wrap;
-    margin-bottom: 1.5rem;
-    font-size: clamp(0.85rem, 2.5vw, 1rem);
-  }
+      .game-header {
+        display: flex;
+        justify-content: space-between;
+        gap: 0.5rem;
+        flex-wrap: wrap;
+        margin-bottom: 1.5rem;
+        font-size: clamp(0.85rem, 2.5vw, 1rem);
+      }
 
-  .game-header > div {
-    background: rgba(255,255,255,0.6);
-    padding: 0.4rem 0.8rem;
-    border-radius: 10px;
-    font-weight: 600;
-  }
+      .game-header > div {
+        background: rgba(255, 255, 255, 0.6);
+        padding: 0.4rem 0.8rem;
+        border-radius: 10px;
+        font-weight: 600;
+      }
 
-  .problem {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 0.75rem;
-    font-size: clamp(2.5rem, 8vw, 4.5rem);
-    font-weight: 800;
-    margin-bottom: 1.5rem;
-    min-height: 5rem;
-  }
+      .problem {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.75rem;
+        font-size: clamp(2.5rem, 8vw, 4.5rem);
+        font-weight: 800;
+        margin-bottom: 1.5rem;
+        min-height: 5rem;
+      }
 
-  .problem .num { color: var(--text); }
-  .problem .op { color: var(--text-light); }
-  .problem .eq { color: var(--text-light); }
-  .problem .q { color: var(--text-light); }
+      .problem .num {
+        color: var(--text);
+      }
+      .problem .op {
+        color: var(--text-light);
+      }
+      .problem .eq {
+        color: var(--text-light);
+      }
+      .problem .q {
+        color: var(--text-light);
+      }
 
-  #answer-form {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 1rem;
-    margin-bottom: 1rem;
-  }
+      #answer-form {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 1rem;
+        margin-bottom: 1rem;
+      }
 
-  .answer-row {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-  }
+      .answer-row {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+      }
 
-  .answer-row .eq-small { font-size: 2rem; font-weight: 800; color: var(--text-light); }
+      .answer-row .eq-small {
+        font-size: 2rem;
+        font-weight: 800;
+        color: var(--text-light);
+      }
 
-  #feedback {
-    min-height: 2rem;
-    font-size: 1.2rem;
-    font-weight: 700;
-    margin-top: 0.5rem;
-  }
+      #feedback {
+        min-height: 2rem;
+        font-size: 1.2rem;
+        font-weight: 700;
+        margin-top: 0.5rem;
+      }
 
-  #feedback.correct { color: #059669; }
-  #feedback.wrong { color: #dc2626; }
+      #feedback.correct {
+        color: #059669;
+      }
+      #feedback.wrong {
+        color: #dc2626;
+      }
 
-  .hidden { display: none !important; }
+      .hidden {
+        display: none !important;
+      }
 
-  .summary-stats {
-    display: flex;
-    flex-direction: column;
-    gap: 0.75rem;
-    font-size: 1.2rem;
-    margin-bottom: 1.5rem;
-  }
+      .summary-stats {
+        display: flex;
+        flex-direction: column;
+        gap: 0.75rem;
+        font-size: 1.2rem;
+        margin-bottom: 1.5rem;
+      }
 
-  .summary-stats p { font-weight: 600; }
+      .summary-stats p {
+        font-weight: 600;
+      }
 
-  /* Level-up banner */
-  #level-up-banner {
-    position: fixed;
-    inset: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: rgba(0,0,0,0.4);
-    z-index: 100;
-    animation: fadeIn 0.3s ease;
-  }
+      /* Level-up banner */
+      #level-up-banner {
+        position: fixed;
+        inset: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: rgba(0, 0, 0, 0.4);
+        z-index: 100;
+        animation: fadeIn 0.3s ease;
+      }
 
-  #level-up-banner .banner-content {
-    background: linear-gradient(135deg, var(--gold), var(--pink), var(--mint));
-    padding: 2rem 3rem;
-    border-radius: var(--radius);
-    font-size: clamp(1.5rem, 5vw, 2.5rem);
-    font-weight: 800;
-    text-align: center;
-    box-shadow: var(--shadow);
-    animation: popIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-  }
+      #level-up-banner .banner-content {
+        background: linear-gradient(135deg, var(--gold), var(--pink), var(--mint));
+        padding: 2rem 3rem;
+        border-radius: var(--radius);
+        font-size: clamp(1.5rem, 5vw, 2.5rem);
+        font-weight: 800;
+        text-align: center;
+        box-shadow: var(--shadow);
+        animation: popIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      }
 
-  /* Correct animation — confetti */
-  .confetti-container {
-    position: fixed;
-    inset: 0;
-    pointer-events: none;
-    z-index: 50;
-    overflow: hidden;
-  }
+      /* Correct animation — confetti */
+      .confetti-container {
+        position: fixed;
+        inset: 0;
+        pointer-events: none;
+        z-index: 50;
+        overflow: hidden;
+      }
 
-  @keyframes confettiFall {
-    0% { transform: translateY(-10vh) rotate(0deg); opacity: 1; }
-    100% { transform: translateY(110vh) rotate(720deg); opacity: 0; }
-  }
+      @keyframes confettiFall {
+        0% {
+          transform: translateY(-10vh) rotate(0deg);
+          opacity: 1;
+        }
+        100% {
+          transform: translateY(110vh) rotate(720deg);
+          opacity: 0;
+        }
+      }
 
-  .confetti-piece {
-    position: absolute;
-    width: 10px;
-    height: 10px;
-    border-radius: 2px;
-    animation: confettiFall 2.5s ease-in forwards;
-  }
+      .confetti-piece {
+        position: absolute;
+        width: 10px;
+        height: 10px;
+        border-radius: 2px;
+        animation: confettiFall 2.5s ease-in forwards;
+      }
 
-  /* Shake animation */
-  @keyframes shake {
-    0%, 100% { transform: translateX(0); }
-    20% { transform: translateX(-10px); }
-    40% { transform: translateX(10px); }
-    60% { transform: translateX(-8px); }
-    80% { transform: translateX(8px); }
-  }
+      /* Shake animation */
+      @keyframes shake {
+        0%,
+        100% {
+          transform: translateX(0);
+        }
+        20% {
+          transform: translateX(-10px);
+        }
+        40% {
+          transform: translateX(10px);
+        }
+        60% {
+          transform: translateX(-8px);
+        }
+        80% {
+          transform: translateX(8px);
+        }
+      }
 
-  .shake { animation: shake 0.4s ease; }
+      .shake {
+        animation: shake 0.4s ease;
+      }
 
-  @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-  @keyframes popIn { from { transform: scale(0.5); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+        }
+        to {
+          opacity: 1;
+        }
+      }
+      @keyframes popIn {
+        from {
+          transform: scale(0.5);
+          opacity: 0;
+        }
+        to {
+          transform: scale(1);
+          opacity: 1;
+        }
+      }
 
-  .user-list { display: flex; flex-direction: column; gap: 0.75rem; margin-bottom: 1.5rem; }
-  .user-btn { font-size: 1.3rem; padding: 0.75rem 1.5rem; background: rgba(255,255,255,0.7); color: var(--text); border: 3px solid var(--lavender); border-radius: 14px; cursor: pointer; font-weight: 700; transition: transform 0.15s, border-color 0.15s; }
-  .user-btn:hover { transform: scale(1.03); border-color: var(--text-light); }
-  .user-btn:active { transform: scale(0.97); }
-  .new-player-wrap { text-align: center; }
-  .new-player-btn { background: none; color: var(--text-light); border: 2px dashed var(--lavender); font-size: 1rem; }
-  .new-player-btn:hover { border-color: var(--text-light); }
-  .new-player-actions { display: flex; gap: 0.5rem; justify-content: center; margin-top: 0.5rem; }
-  .cancel-btn { background: rgba(255,255,255,0.5); color: var(--text); font-size: 1rem; padding: 0.5rem 1.25rem; }
+      .user-list {
+        display: flex;
+        flex-direction: column;
+        gap: 0.75rem;
+        margin-bottom: 1.5rem;
+      }
+      .user-btn {
+        font-size: 1.3rem;
+        padding: 0.75rem 1.5rem;
+        background: rgba(255, 255, 255, 0.7);
+        color: var(--text);
+        border: 3px solid var(--lavender);
+        border-radius: 14px;
+        cursor: pointer;
+        font-weight: 700;
+        transition:
+          transform 0.15s,
+          border-color 0.15s;
+      }
+      .user-btn:hover {
+        transform: scale(1.03);
+        border-color: var(--text-light);
+      }
+      .user-btn:active {
+        transform: scale(0.97);
+      }
+      .new-player-wrap {
+        text-align: center;
+      }
+      .new-player-btn {
+        background: none;
+        color: var(--text-light);
+        border: 2px dashed var(--lavender);
+        font-size: 1rem;
+      }
+      .new-player-btn:hover {
+        border-color: var(--text-light);
+      }
+      .new-player-actions {
+        display: flex;
+        gap: 0.5rem;
+        justify-content: center;
+        margin-top: 0.5rem;
+      }
+      .cancel-btn {
+        background: rgba(255, 255, 255, 0.5);
+        color: var(--text);
+        font-size: 1rem;
+        padding: 0.5rem 1.25rem;
+      }
 
-  .progress { display: flex; justify-content: center; gap: 0.4rem; margin-bottom: 1rem; }
-  .progress-dot { width: 16px; height: 16px; border-radius: 50%; background: var(--lavender); transition: background 0.3s, transform 0.3s; }
-  .progress-dot.done { background: var(--text-light); }
-  .progress-dot.current { background: var(--gold); transform: scale(1.3); box-shadow: 0 0 6px rgba(251,191,36,0.6); }
+      .progress {
+        display: flex;
+        justify-content: center;
+        gap: 0.4rem;
+        margin-bottom: 1rem;
+      }
+      .progress-dot {
+        width: 16px;
+        height: 16px;
+        border-radius: 50%;
+        background: var(--lavender);
+        transition:
+          background 0.3s,
+          transform 0.3s;
+      }
+      .progress-dot.done {
+        background: var(--text-light);
+      }
+      .progress-dot.current {
+        background: var(--gold);
+        transform: scale(1.3);
+        box-shadow: 0 0 6px rgba(251, 191, 36, 0.6);
+      }
 
-  .numpad { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.5rem; max-width: 240px; margin: 0 auto 1rem; }
-  .numpad button { font-size: 1.5rem; padding: 0; aspect-ratio: 1; }
+      .numpad {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 0.5rem;
+        max-width: 240px;
+        margin: 0 auto 1rem;
+      }
+      .numpad button {
+        font-size: 1.5rem;
+        padding: 0;
+        aspect-ratio: 1;
+      }
 
-  .summary-stars { font-size: 2.5rem; margin-bottom: 1rem; }
+      .summary-stars {
+        font-size: 2.5rem;
+        margin-bottom: 1rem;
+      }
 
-  @media (prefers-reduced-motion: reduce) {
-    *, *::before, *::after {
-      animation-duration: 0.01ms !important;
-      animation-iteration-count: 1 !important;
-    }
-    body { animation: none; }
-    .confetti-container { display: none; }
-  }
+      @media (prefers-reduced-motion: reduce) {
+        *,
+        *::before,
+        *::after {
+          animation-duration: 0.01ms !important;
+          animation-iteration-count: 1 !important;
+        }
+        body {
+          animation: none;
+        }
+        .confetti-container {
+          display: none;
+        }
+      }
 
-  @media (max-width: 400px) {
-    .card { padding: 1.25rem; }
-    .game-header { font-size: 0.8rem; }
-    .game-header > div { padding: 0.3rem 0.5rem; }
-  }
-</style>
-</head>
-<body>
-
-<div class="card" role="main">
-  <!-- Name Screen -->
-  <section id="screen-name">
-    <h1 id="name-title"></h1>
-    <div id="user-list" class="user-list"></div>
-    <div id="new-player-wrap" class="new-player-wrap">
-      <button id="new-player-btn" class="new-player-btn"></button>
-      <div id="new-player-form" class="hidden">
-        <input type="text" id="name-input" maxlength="20" autocomplete="off">
-        <div class="new-player-actions">
-          <button id="cancel-btn" class="cancel-btn">← Back</button>
-          <button id="start-btn"></button>
+      @media (max-width: 400px) {
+        .card {
+          padding: 1.25rem;
+        }
+        .game-header {
+          font-size: 0.8rem;
+        }
+        .game-header > div {
+          padding: 0.3rem 0.5rem;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="card" role="main">
+      <!-- Name Screen -->
+      <section id="screen-name">
+        <h1 id="name-title"></h1>
+        <div id="user-list" class="user-list"></div>
+        <div id="new-player-wrap" class="new-player-wrap">
+          <button id="new-player-btn" class="new-player-btn"></button>
+          <div id="new-player-form" class="hidden">
+            <input type="text" id="name-input" maxlength="20" autocomplete="off" />
+            <div class="new-player-actions">
+              <button id="cancel-btn" class="cancel-btn">← Back</button>
+              <button id="start-btn"></button>
+            </div>
+          </div>
         </div>
-      </div>
+      </section>
+
+      <!-- Game Screen -->
+      <section id="screen-game" class="hidden">
+        <div class="game-header" aria-live="polite">
+          <div class="level-display" id="level-display"></div>
+          <div class="streak-display" id="streak-display"></div>
+          <div class="score-display" id="score-display"></div>
+        </div>
+
+        <div class="progress" id="progress" aria-label="Round progress"></div>
+
+        <div class="problem" aria-live="assertive">
+          <span class="num" id="num-a">0</span>
+          <span class="op" id="op">+</span>
+          <span class="num" id="num-b">0</span>
+          <span class="eq">=</span>
+          <span class="q">?</span>
+        </div>
+
+        <form id="answer-form">
+          <div class="answer-row">
+            <span class="eq-small">?</span>
+            <input type="number" id="answer-input" aria-label="Your answer" autocomplete="off" />
+          </div>
+          <button type="submit" id="submit-btn">🦄</button>
+        </form>
+
+        <div id="feedback" role="alert"></div>
+
+        <div class="numpad" id="numpad">
+          <button data-num="1">1</button>
+          <button data-num="2">2</button>
+          <button data-num="3">3</button>
+          <button data-num="4">4</button>
+          <button data-num="5">5</button>
+          <button data-num="6">6</button>
+          <button data-num="7">7</button>
+          <button data-num="8">8</button>
+          <button data-num="9">9</button>
+          <button data-action="clear">C</button>
+          <button data-num="0">0</button>
+          <button data-action="backspace">⌫</button>
+        </div>
+      </section>
+
+      <!-- Summary Screen -->
+      <section id="screen-summary" class="hidden">
+        <h1 id="summary-title"></h1>
+        <div id="summary-stars" class="summary-stars"></div>
+        <div class="summary-stats">
+          <p id="summary-score"></p>
+          <p id="summary-pct"></p>
+          <p id="summary-level"></p>
+        </div>
+        <button id="play-again-btn"></button>
+      </section>
     </div>
-  </section>
 
-  <!-- Game Screen -->
-  <section id="screen-game" class="hidden">
-    <div class="game-header" aria-live="polite">
-      <div class="level-display" id="level-display"></div>
-      <div class="streak-display" id="streak-display"></div>
-      <div class="score-display" id="score-display"></div>
+    <!-- Level-up Banner -->
+    <div id="level-up-banner" class="hidden" role="alert">
+      <div class="banner-content" id="level-up-text"></div>
     </div>
 
-    <div class="progress" id="progress" aria-label="Round progress"></div>
+    <script type="module">
+      import strings from './en.js';
+      import {
+        getLevelConfig,
+        generateProblem,
+        checkAnswer,
+        updateLevel,
+        generateRound,
+        scoreRound,
+      } from './game.js';
 
-    <div class="problem" aria-live="assertive">
-      <span class="num" id="num-a">0</span>
-      <span class="op" id="op">+</span>
-      <span class="num" id="num-b">0</span>
-      <span class="eq">=</span>
-      <span class="q">?</span>
-    </div>
+      const ROUND_SIZE = 10;
 
-    <form id="answer-form">
-      <div class="answer-row">
-        <span class="eq-small">?</span>
-        <input type="number" id="answer-input" aria-label="Your answer" autocomplete="off">
-      </div>
-      <button type="submit" id="submit-btn">🦄</button>
-    </form>
+      const state = {
+        screen: 'name',
+        name: 'Player',
+        level: 1,
+        roundLevel: 1,
+        streak: 0,
+        correctCount: 0,
+        round: [],
+        currentProblem: 0,
+        results: [],
+        gotWrong: false,
+      };
 
-    <div id="feedback" role="alert"></div>
+      /* ---- DOM refs ---- */
+      const $ = (id) => document.getElementById(id);
+      const screens = {
+        name: $('screen-name'),
+        game: $('screen-game'),
+        summary: $('screen-summary'),
+      };
+      const nameInput = $('name-input');
+      const startBtn = $('start-btn');
+      const levelDisplay = $('level-display');
+      const streakDisplay = $('streak-display');
+      const scoreDisplay = $('score-display');
+      const numA = $('num-a');
+      const op = $('op');
+      const numB = $('num-b');
+      const answerForm = $('answer-form');
+      const answerInput = $('answer-input');
+      const submitBtn = $('submit-btn');
+      const feedback = $('feedback');
+      const summaryTitle = $('summary-title');
+      const summaryScore = $('summary-score');
+      const summaryPct = $('summary-pct');
+      const summaryLevel = $('summary-level');
+      const playAgainBtn = $('play-again-btn');
+      const levelUpBanner = $('level-up-banner');
+      const levelUpText = $('level-up-text');
 
-    <div class="numpad" id="numpad">
-      <button data-num="1">1</button>
-      <button data-num="2">2</button>
-      <button data-num="3">3</button>
-      <button data-num="4">4</button>
-      <button data-num="5">5</button>
-      <button data-num="6">6</button>
-      <button data-num="7">7</button>
-      <button data-num="8">8</button>
-      <button data-num="9">9</button>
-      <button data-action="clear">C</button>
-      <button data-num="0">0</button>
-      <button data-action="backspace">⌫</button>
-    </div>
-  </section>
-
-  <!-- Summary Screen -->
-  <section id="screen-summary" class="hidden">
-    <h1 id="summary-title"></h1>
-    <div id="summary-stars" class="summary-stars"></div>
-    <div class="summary-stats">
-      <p id="summary-score"></p>
-      <p id="summary-pct"></p>
-      <p id="summary-level"></p>
-    </div>
-    <button id="play-again-btn"></button>
-  </section>
-</div>
-
-<!-- Level-up Banner -->
-<div id="level-up-banner" class="hidden" role="alert">
-  <div class="banner-content" id="level-up-text"></div>
-</div>
-
-<script type="module">
-import strings from './en.js';
-import {
-  getLevelConfig,
-  generateProblem,
-  checkAnswer,
-  updateLevel,
-  generateRound,
-  scoreRound,
-} from './game.js';
-
-const ROUND_SIZE = 10;
-
-const state = {
-  screen: 'name',
-  name: 'Player',
-  level: 1,
-  roundLevel: 1,
-  streak: 0,
-  correctCount: 0,
-  round: [],
-  currentProblem: 0,
-  results: [],
-  gotWrong: false,
-};
-
-/* ---- DOM refs ---- */
-const $ = (id) => document.getElementById(id);
-const screens = {
-  name: $('screen-name'),
-  game: $('screen-game'),
-  summary: $('screen-summary'),
-};
-const nameInput = $('name-input');
-const startBtn = $('start-btn');
-const levelDisplay = $('level-display');
-const streakDisplay = $('streak-display');
-const scoreDisplay = $('score-display');
-const numA = $('num-a');
-const op = $('op');
-const numB = $('num-b');
-const answerForm = $('answer-form');
-const answerInput = $('answer-input');
-const submitBtn = $('submit-btn');
-const feedback = $('feedback');
-const summaryTitle = $('summary-title');
-const summaryScore = $('summary-score');
-const summaryPct = $('summary-pct');
-const summaryLevel = $('summary-level');
-const playAgainBtn = $('play-again-btn');
-const levelUpBanner = $('level-up-banner');
-const levelUpText = $('level-up-text');
-
-/* ---- helpers ---- */
-function fill(el, text) { el.textContent = text; }
-
-function showScreen(name) {
-  Object.keys(screens).forEach((k) => screens[k].classList.toggle('hidden', k !== name));
-  state.screen = name;
-}
-
-function getLevelName(level) {
-  const names = strings.levelNames;
-  return names[Math.min(level, names.length) - 1];
-}
-
-function formatTemplate(tpl, data) {
-  return tpl.replace(/\{(\w+)\}/g, (_, key) => data[key] ?? `{${key}}`);
-}
-
-/* ---- rendering ---- */
-async function renderNameScreen() {
-  fill($('name-title'), strings.nameTitle);
-  fill($('new-player-btn'), strings.newPlayer);
-  nameInput.placeholder = strings.namePlaceholder;
-  fill(startBtn, strings.startButton);
-
-  const userList = $('user-list');
-  userList.innerHTML = '';
-  const newPlayerForm = $('new-player-form');
-  newPlayerForm.classList.add('hidden');
-
-  try {
-    const res = await fetch('/api/users');
-    if (res.ok) {
-      const names = await res.json();
-      names.sort();
-      for (const name of names) {
-        const btn = document.createElement('button');
-        btn.className = 'user-btn';
-        btn.textContent = name;
-        btn.addEventListener('click', () => selectUser(name));
-        userList.appendChild(btn);
+      /* ---- helpers ---- */
+      function fill(el, text) {
+        el.textContent = text;
       }
-    }
-  } catch { /* offline — no saved users shown */ }
 
-  showScreen('name');
-}
-
-function selectUser(name) {
-  state.name = name;
-  loadUserAndStart();
-}
-
-async function loadUserAndStart() {
-  try {
-    const res = await fetch(`/api/users/${encodeURIComponent(state.name)}`);
-    if (res.ok) {
-      const user = await res.json();
-      state.level = user.currentLevel;
-      state.streak = user.streak;
-    }
-  } catch { /* offline — start fresh */ }
-  startRound();
-}
-
-$('new-player-btn').addEventListener('click', () => {
-  $('new-player-form').classList.remove('hidden');
-  $('new-player-btn').classList.add('hidden');
-  nameInput.focus();
-});
-
-$('cancel-btn').addEventListener('click', () => {
-  $('new-player-form').classList.add('hidden');
-  $('new-player-btn').classList.remove('hidden');
-});
-
-function renderProgress() {
-  const container = $('progress');
-  container.innerHTML = '';
-  for (let i = 0; i < ROUND_SIZE; i++) {
-    const dot = document.createElement('div');
-    dot.className = 'progress-dot';
-    if (i < state.currentProblem) dot.classList.add('done');
-    else if (i === state.currentProblem) dot.classList.add('current');
-    container.appendChild(dot);
-  }
-}
-
-function renderGameScreen() {
-  const levelName = getLevelName(state.level);
-  fill(levelDisplay, formatTemplate(strings.levelName, { rank: levelName }));
-  fill(streakDisplay, formatTemplate(strings.streak, { n: state.streak }));
-  fill(scoreDisplay, formatTemplate(strings.score, { correct: state.correctCount, total: ROUND_SIZE }));
-
-  renderProgress();
-
-  const problem = state.round[state.currentProblem];
-  fill(numA, problem.a);
-  fill(op, problem.operator === '+' ? '+' : '−');
-  fill(numB, problem.b);
-
-  feedback.textContent = '';
-  feedback.className = '';
-  answerInput.value = '';
-  answerInput.disabled = false;
-  answerInput.focus();
-  submitBtn.disabled = false;
-
-  showScreen('game');
-}
-
-function renderStars(pct) {
-  const numStars = pct === 100 ? 5 : pct >= 80 ? 4 : pct >= 60 ? 3 : pct >= 40 ? 2 : 1;
-  const container = $('summary-stars');
-  container.textContent = '';
-  for (let i = 0; i < 5; i++) {
-    const star = document.createElement('span');
-    star.textContent = i < numStars ? '⭐' : '☆';
-    container.appendChild(star);
-  }
-}
-
-function renderSummaryScreen() {
-  const results = state.results;
-  const summary = scoreRound(results.map((r) => ({ isCorrect: r.isCorrect })));
-  const levelName = getLevelName(state.level);
-
-  fill(summaryTitle, formatTemplate(strings.summaryTitle, { name: state.name }));
-  fill(summaryScore, formatTemplate(strings.summaryScore, { correct: summary.correct, total: summary.total }));
-  fill(summaryPct, formatTemplate(strings.summaryPct, { pct: summary.pct }));
-  fill(summaryLevel, formatTemplate(strings.summaryLevel, { rank: levelName }));
-  fill(playAgainBtn, strings.playAgain);
-
-  renderStars(summary.pct);
-
-  if (summary.pct === 100) {
-    setTimeout(spawnConfetti, 300);
-    setTimeout(spawnConfetti, 800);
-    setTimeout(spawnConfetti, 1300);
-    fill(summaryTitle, strings.perfectRound);
-  }
-
-  showScreen('summary');
-}
-
-/* ---- confetti ---- */
-function spawnConfetti() {
-  const container = document.createElement('div');
-  container.className = 'confetti-container';
-  const colors = ['#fbcfe8', '#d8b4fe', '#a7f3d0', '#fde68a', '#fca5a5', '#93c5fd', '#c4b5fd'];
-  const shapes = ['■', '●', '▲', '★', '♥'];
-  for (let i = 0; i < 40; i++) {
-    const piece = document.createElement('div');
-    piece.className = 'confetti-piece';
-    piece.textContent = shapes[Math.floor(Math.random() * shapes.length)];
-    piece.style.left = `${Math.random() * 100}%`;
-    piece.style.color = colors[Math.floor(Math.random() * colors.length)];
-    piece.style.fontSize = `${12 + Math.random() * 16}px`;
-    piece.style.animationDelay = `${Math.random() * 1.5}s`;
-    piece.style.animationDuration = `${2 + Math.random() * 1.5}s`;
-    container.appendChild(piece);
-  }
-  document.body.appendChild(container);
-  setTimeout(() => container.remove(), 4000);
-}
-
-/* ---- sound effects ---- */
-let audioCtx;
-function getAudioCtx() {
-  if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-  return audioCtx;
-}
-
-function playNote(freq, start, duration, type, volume) {
-  const ctx = getAudioCtx();
-  const osc = ctx.createOscillator();
-  const gain = ctx.createGain();
-  osc.connect(gain);
-  gain.connect(ctx.destination);
-  osc.type = type || 'sine';
-  osc.frequency.setValueAtTime(freq, start);
-  gain.gain.setValueAtTime(volume || 0.25, start);
-  gain.gain.exponentialRampToValueAtTime(0.01, start + duration);
-  osc.start(start);
-  osc.stop(start + duration);
-}
-
-function playCorrectSound() {
-  const t = getAudioCtx().currentTime;
-  playNote(523, t, 0.15, 'sine', 0.25);
-  playNote(659, t + 0.1, 0.15, 'sine', 0.25);
-  playNote(784, t + 0.2, 0.2, 'sine', 0.25);
-}
-
-function playWrongSound() {
-  const t = getAudioCtx().currentTime;
-  playNote(200, t, 0.2, 'square', 0.15);
-  playNote(150, t + 0.15, 0.2, 'square', 0.15);
-}
-
-function playLevelUpSound() {
-  const t = getAudioCtx().currentTime;
-  playNote(523, t, 0.2, 'sine', 0.2);
-  playNote(659, t + 0.12, 0.2, 'sine', 0.2);
-  playNote(784, t + 0.24, 0.2, 'sine', 0.2);
-  playNote(1047, t + 0.36, 0.3, 'sine', 0.2);
-}
-
-/* ---- level-up banner ---- */
-function showLevelUp(level) {
-  const rank = getLevelName(level);
-  fill(levelUpText, formatTemplate(strings.levelUp, { rank }));
-  levelUpBanner.classList.remove('hidden');
-  setTimeout(() => {
-    levelUpBanner.classList.add('hidden');
-    answerInput.focus();
-  }, 2000);
-}
-
-/* ---- game actions ---- */
-function startRound() {
-  state.roundLevel = state.level;
-  state.round = generateRound(ROUND_SIZE, state.level);
-  state.currentProblem = 0;
-  state.correctCount = 0;
-  state.results = [];
-  state.gotWrong = false;
-  renderGameScreen();
-}
-
-function handleAnswer(e) {
-  e.preventDefault();
-  if (answerInput.disabled) return;
-
-  const raw = answerInput.value.trim();
-  if (raw === '') return;
-
-  const problem = state.round[state.currentProblem];
-  const userAnswer = Number(raw);
-  const correct = checkAnswer(problem, userAnswer);
-
-  if (correct) {
-    if (!state.gotWrong) {
-      state.streak++;
-    }
-    state.correctCount++;
-    state.results.push({ userAnswer, isCorrect: true });
-
-    playCorrectSound();
-    fill(feedback, strings.correct);
-    feedback.className = 'correct';
-    spawnConfetti();
-
-    answerInput.disabled = true;
-    submitBtn.disabled = true;
-
-    const newLevel = updateLevel(state.streak, state.level);
-    const leveledUp = newLevel !== state.level;
-    state.level = newLevel;
-
-    setTimeout(() => {
-      if (leveledUp) {
-        playLevelUpSound();
-        showLevelUp(state.level);
+      function showScreen(name) {
+        Object.keys(screens).forEach((k) => screens[k].classList.toggle('hidden', k !== name));
+        state.screen = name;
       }
-      nextProblem();
-    }, leveledUp ? 2200 : 800);
-  } else {
-    playWrongSound();
-    feedback.className = 'wrong';
-    fill(feedback, formatTemplate(strings.wrong, {
-      a: problem.a,
-      op: problem.operator === '+' ? '+' : '−',
-      b: problem.b,
-      answer: raw,
-    }));
-    const card = document.querySelector('.card');
-    card.classList.remove('shake');
-    void card.offsetWidth;
-    card.classList.add('shake');
-    state.gotWrong = true;
-    answerInput.value = '';
-    answerInput.focus();
-  }
-}
 
-function nextProblem() {
-  state.currentProblem++;
-  state.gotWrong = false;
+      function getLevelName(level) {
+        const names = strings.levelNames;
+        return names[Math.min(level, names.length) - 1];
+      }
 
-  if (state.currentProblem >= ROUND_SIZE) {
-    saveRound();
-    return;
-  }
+      function formatTemplate(tpl, data) {
+        return tpl.replace(/\{(\w+)\}/g, (_, key) => data[key] ?? `{${key}}`);
+      }
 
-  renderGameScreen();
-}
+      /* ---- rendering ---- */
+      async function renderNameScreen() {
+        fill($('name-title'), strings.nameTitle);
+        fill($('new-player-btn'), strings.newPlayer);
+        nameInput.placeholder = strings.namePlaceholder;
+        fill(startBtn, strings.startButton);
 
-async function saveRound() {
-  const summary = scoreRound(state.results.map(r => ({ isCorrect: r.isCorrect })));
-  try {
-    await fetch('/api/rounds', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        userName: state.name,
-        level: state.roundLevel,
-        correct: summary.correct,
-        total: summary.total,
-        pct: summary.pct,
-        currentLevel: state.level,
-        streak: state.streak,
-      }),
-    });
-  } catch { /* offline — no persistence */ }
-  renderSummaryScreen();
-}
+        const userList = $('user-list');
+        userList.innerHTML = '';
+        const newPlayerForm = $('new-player-form');
+        newPlayerForm.classList.add('hidden');
 
-function handlePlayAgain() {
-  startRound();
-}
+        try {
+          const res = await fetch('/api/users');
+          if (res.ok) {
+            const names = await res.json();
+            names.sort();
+            for (const name of names) {
+              const btn = document.createElement('button');
+              btn.className = 'user-btn';
+              btn.textContent = name;
+              btn.addEventListener('click', () => selectUser(name));
+              userList.appendChild(btn);
+            }
+          }
+        } catch {
+          /* offline — no saved users shown */
+        }
 
-function handleStart() {
-  const name = nameInput.value.trim() || 'Player';
-  state.name = name;
-  state.level = 1;
-  state.streak = 0;
-  loadUserAndStart();
-}
+        showScreen('name');
+      }
 
-/* ---- numpad ---- */
-$('numpad').addEventListener('click', (e) => {
-  const btn = e.target.closest('button');
-  if (!btn) return;
-  if (btn.dataset.num !== undefined) {
-    answerInput.value += btn.dataset.num;
-    answerInput.focus();
-  }
-  if (btn.dataset.action === 'backspace') {
-    answerInput.value = answerInput.value.slice(0, -1);
-    answerInput.focus();
-  }
-  if (btn.dataset.action === 'clear') {
-    answerInput.value = '';
-    answerInput.focus();
-  }
-});
+      function selectUser(name) {
+        state.name = name;
+        loadUserAndStart();
+      }
 
-/* ---- event binding ---- */
-answerForm.addEventListener('submit', handleAnswer);
-startBtn.addEventListener('click', handleStart);
-playAgainBtn.addEventListener('click', handlePlayAgain);
-nameInput.addEventListener('keydown', (e) => {
-  if (e.key === 'Enter') handleStart();
-});
+      async function loadUserAndStart() {
+        try {
+          const res = await fetch(`/api/users/${encodeURIComponent(state.name)}`);
+          if (res.ok) {
+            const user = await res.json();
+            state.level = user.currentLevel;
+            state.streak = user.streak;
+          }
+        } catch {
+          /* offline — start fresh */
+        }
+        startRound();
+      }
 
-/* ---- init ---- */
-renderNameScreen();
-</script>
-</body>
+      $('new-player-btn').addEventListener('click', () => {
+        $('new-player-form').classList.remove('hidden');
+        $('new-player-btn').classList.add('hidden');
+        nameInput.focus();
+      });
+
+      $('cancel-btn').addEventListener('click', () => {
+        $('new-player-form').classList.add('hidden');
+        $('new-player-btn').classList.remove('hidden');
+      });
+
+      function renderProgress() {
+        const container = $('progress');
+        container.innerHTML = '';
+        for (let i = 0; i < ROUND_SIZE; i++) {
+          const dot = document.createElement('div');
+          dot.className = 'progress-dot';
+          if (i < state.currentProblem) dot.classList.add('done');
+          else if (i === state.currentProblem) dot.classList.add('current');
+          container.appendChild(dot);
+        }
+      }
+
+      function renderGameScreen() {
+        const levelName = getLevelName(state.level);
+        fill(levelDisplay, formatTemplate(strings.levelName, { rank: levelName }));
+        fill(streakDisplay, formatTemplate(strings.streak, { n: state.streak }));
+        fill(
+          scoreDisplay,
+          formatTemplate(strings.score, { correct: state.correctCount, total: ROUND_SIZE }),
+        );
+
+        renderProgress();
+
+        const problem = state.round[state.currentProblem];
+        fill(numA, problem.a);
+        fill(op, problem.operator === '+' ? '+' : '−');
+        fill(numB, problem.b);
+
+        feedback.textContent = '';
+        feedback.className = '';
+        answerInput.value = '';
+        answerInput.disabled = false;
+        answerInput.focus();
+        submitBtn.disabled = false;
+
+        showScreen('game');
+      }
+
+      function renderStars(pct) {
+        const numStars = pct === 100 ? 5 : pct >= 80 ? 4 : pct >= 60 ? 3 : pct >= 40 ? 2 : 1;
+        const container = $('summary-stars');
+        container.textContent = '';
+        for (let i = 0; i < 5; i++) {
+          const star = document.createElement('span');
+          star.textContent = i < numStars ? '⭐' : '☆';
+          container.appendChild(star);
+        }
+      }
+
+      function renderSummaryScreen() {
+        const results = state.results;
+        const summary = scoreRound(results.map((r) => ({ isCorrect: r.isCorrect })));
+        const levelName = getLevelName(state.level);
+
+        fill(summaryTitle, formatTemplate(strings.summaryTitle, { name: state.name }));
+        fill(
+          summaryScore,
+          formatTemplate(strings.summaryScore, { correct: summary.correct, total: summary.total }),
+        );
+        fill(summaryPct, formatTemplate(strings.summaryPct, { pct: summary.pct }));
+        fill(summaryLevel, formatTemplate(strings.summaryLevel, { rank: levelName }));
+        fill(playAgainBtn, strings.playAgain);
+
+        renderStars(summary.pct);
+
+        if (summary.pct === 100) {
+          setTimeout(spawnConfetti, 300);
+          setTimeout(spawnConfetti, 800);
+          setTimeout(spawnConfetti, 1300);
+          fill(summaryTitle, strings.perfectRound);
+        }
+
+        showScreen('summary');
+      }
+
+      /* ---- confetti ---- */
+      function spawnConfetti() {
+        const container = document.createElement('div');
+        container.className = 'confetti-container';
+        const colors = [
+          '#fbcfe8',
+          '#d8b4fe',
+          '#a7f3d0',
+          '#fde68a',
+          '#fca5a5',
+          '#93c5fd',
+          '#c4b5fd',
+        ];
+        const shapes = ['■', '●', '▲', '★', '♥'];
+        for (let i = 0; i < 40; i++) {
+          const piece = document.createElement('div');
+          piece.className = 'confetti-piece';
+          piece.textContent = shapes[Math.floor(Math.random() * shapes.length)];
+          piece.style.left = `${Math.random() * 100}%`;
+          piece.style.color = colors[Math.floor(Math.random() * colors.length)];
+          piece.style.fontSize = `${12 + Math.random() * 16}px`;
+          piece.style.animationDelay = `${Math.random() * 1.5}s`;
+          piece.style.animationDuration = `${2 + Math.random() * 1.5}s`;
+          container.appendChild(piece);
+        }
+        document.body.appendChild(container);
+        setTimeout(() => container.remove(), 4000);
+      }
+
+      /* ---- sound effects ---- */
+      let audioCtx;
+      function getAudioCtx() {
+        if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        return audioCtx;
+      }
+
+      function playNote(freq, start, duration, type, volume) {
+        const ctx = getAudioCtx();
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        osc.type = type || 'sine';
+        osc.frequency.setValueAtTime(freq, start);
+        gain.gain.setValueAtTime(volume || 0.25, start);
+        gain.gain.exponentialRampToValueAtTime(0.01, start + duration);
+        osc.start(start);
+        osc.stop(start + duration);
+      }
+
+      function playCorrectSound() {
+        const t = getAudioCtx().currentTime;
+        playNote(523, t, 0.15, 'sine', 0.25);
+        playNote(659, t + 0.1, 0.15, 'sine', 0.25);
+        playNote(784, t + 0.2, 0.2, 'sine', 0.25);
+      }
+
+      function playWrongSound() {
+        const t = getAudioCtx().currentTime;
+        playNote(200, t, 0.2, 'square', 0.15);
+        playNote(150, t + 0.15, 0.2, 'square', 0.15);
+      }
+
+      function playLevelUpSound() {
+        const t = getAudioCtx().currentTime;
+        playNote(523, t, 0.2, 'sine', 0.2);
+        playNote(659, t + 0.12, 0.2, 'sine', 0.2);
+        playNote(784, t + 0.24, 0.2, 'sine', 0.2);
+        playNote(1047, t + 0.36, 0.3, 'sine', 0.2);
+      }
+
+      /* ---- level-up banner ---- */
+      function showLevelUp(level) {
+        const rank = getLevelName(level);
+        fill(levelUpText, formatTemplate(strings.levelUp, { rank }));
+        levelUpBanner.classList.remove('hidden');
+        setTimeout(() => {
+          levelUpBanner.classList.add('hidden');
+          answerInput.focus();
+        }, 2000);
+      }
+
+      /* ---- game actions ---- */
+      function startRound() {
+        state.roundLevel = state.level;
+        state.round = generateRound(ROUND_SIZE, state.level);
+        state.currentProblem = 0;
+        state.correctCount = 0;
+        state.results = [];
+        state.gotWrong = false;
+        renderGameScreen();
+      }
+
+      function handleAnswer(e) {
+        e.preventDefault();
+        if (answerInput.disabled) return;
+
+        const raw = answerInput.value.trim();
+        if (raw === '') return;
+
+        const problem = state.round[state.currentProblem];
+        const userAnswer = Number(raw);
+        const correct = checkAnswer(problem, userAnswer);
+
+        if (correct) {
+          if (!state.gotWrong) {
+            state.streak++;
+          }
+          state.correctCount++;
+          state.results.push({ userAnswer, isCorrect: true });
+
+          playCorrectSound();
+          fill(feedback, strings.correct);
+          feedback.className = 'correct';
+          spawnConfetti();
+
+          answerInput.disabled = true;
+          submitBtn.disabled = true;
+
+          const newLevel = updateLevel(state.streak, state.level);
+          const leveledUp = newLevel !== state.level;
+          state.level = newLevel;
+
+          setTimeout(
+            () => {
+              if (leveledUp) {
+                playLevelUpSound();
+                showLevelUp(state.level);
+              }
+              nextProblem();
+            },
+            leveledUp ? 2200 : 800,
+          );
+        } else {
+          playWrongSound();
+          feedback.className = 'wrong';
+          fill(
+            feedback,
+            formatTemplate(strings.wrong, {
+              a: problem.a,
+              op: problem.operator === '+' ? '+' : '−',
+              b: problem.b,
+              answer: raw,
+            }),
+          );
+          const card = document.querySelector('.card');
+          card.classList.remove('shake');
+          void card.offsetWidth;
+          card.classList.add('shake');
+          state.gotWrong = true;
+          answerInput.value = '';
+          answerInput.focus();
+        }
+      }
+
+      function nextProblem() {
+        state.currentProblem++;
+        state.gotWrong = false;
+
+        if (state.currentProblem >= ROUND_SIZE) {
+          saveRound();
+          return;
+        }
+
+        renderGameScreen();
+      }
+
+      async function saveRound() {
+        const summary = scoreRound(state.results.map((r) => ({ isCorrect: r.isCorrect })));
+        try {
+          await fetch('/api/rounds', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              userName: state.name,
+              level: state.roundLevel,
+              correct: summary.correct,
+              total: summary.total,
+              pct: summary.pct,
+              currentLevel: state.level,
+              streak: state.streak,
+            }),
+          });
+        } catch {
+          /* offline — no persistence */
+        }
+        renderSummaryScreen();
+      }
+
+      function handlePlayAgain() {
+        startRound();
+      }
+
+      function handleStart() {
+        const name = nameInput.value.trim() || 'Player';
+        state.name = name;
+        state.level = 1;
+        state.streak = 0;
+        loadUserAndStart();
+      }
+
+      /* ---- numpad ---- */
+      $('numpad').addEventListener('click', (e) => {
+        const btn = e.target.closest('button');
+        if (!btn) return;
+        if (btn.dataset.num !== undefined) {
+          answerInput.value += btn.dataset.num;
+          answerInput.focus();
+        }
+        if (btn.dataset.action === 'backspace') {
+          answerInput.value = answerInput.value.slice(0, -1);
+          answerInput.focus();
+        }
+        if (btn.dataset.action === 'clear') {
+          answerInput.value = '';
+          answerInput.focus();
+        }
+      });
+
+      /* ---- event binding ---- */
+      answerForm.addEventListener('submit', handleAnswer);
+      startBtn.addEventListener('click', handleStart);
+      playAgainBtn.addEventListener('click', handlePlayAgain);
+      nameInput.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') handleStart();
+      });
+
+      /* ---- init ---- */
+      renderNameScreen();
+    </script>
+  </body>
 </html>

@@ -1,8 +1,27 @@
 # Ask More 🦄 — Magical Math Game for Kids
 
+## Commit Policy (Read First)
+
+This is a hard rule for every contributor, human or AI:
+
+- **Atomic commits only.** One logical change per commit. Never bundle unrelated
+  refactors, formatting, or features into a single commit. If a change can be
+  split into independently-revertable units, split it.
+- **The pre-commit pipeline must pass on every commit.** The pipeline is:
+  `lint-staged` → `gitleaks` → `jest`. Every gate is mandatory.
+- **Never bypass the pipeline.** No `git commit --no-verify`, no `HUSKY=0`, no
+  uninstalling hooks, no skipping `gitleaks`, no `--testPathIgnorePatterns`.
+  If a gate fails, fix the root cause and re-stage. Do not disable the rule
+  to make the commit land.
+- **No `TODO:` / `FIXME:` / `HACK:` comments in committed code.** ESLint's
+  `no-warning-comments` rule will reject them. Track follow-ups in issues
+  instead, and reference the issue number in the commit/PR.
+
+A commit that lands without passing all three gates will be reverted.
+
 ## Overview
 
-A unicorn-themed progressive math game. Players solve arithmetic problems across 5 ranks, leveling up after 5 consecutive correct answers. Built as a single-page web app with an Express + SQLite backend.
+A progressive math game. Players solve arithmetic problems across 5 ranks, leveling up after 5 consecutive correct answers. Built as a single-page web app with an Express + SQLite backend.
 
 ## Quick Start
 
@@ -20,7 +39,7 @@ docker-compose up   # Run via Docker on port 8080
 | `server.js`          | Express server + `node:sqlite` database (users, rounds)                |
 | `game.js`            | ES module: problem generation, scoring, level progression              |
 | `game.test.js`       | Jest tests covering all game logic                                     |
-| `en.js`              | English localization strings (unicorn/magic themed)                    |
+| `en.js`              | English localization strings (rank names, labels, copy)                |
 | `eslint.config.mjs`  | ESLint flat config — AI slop rules, complexity gates, security checks  |
 | `.prettierrc`        | Prettier formatting config                                             |
 | `.husky/pre-commit`  | Pre-commit hook: lint-staged → gitleaks → jest                         |
